@@ -3,10 +3,10 @@
 import { useEffect, useState } from "react";
 import { getCategory } from "@/services/category.services";
 import { ListCategoryComponent } from "./list-category";
-import type { Blog } from "@/types/category";
+import type { Category } from "@/types/category";
 
 export function ListCategoryWrapper() {
-  const [data, setData] = useState<Blog[]>([]);
+  const [data, setData] = useState<Category[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 

@@ -13,13 +13,13 @@ import { PreviewIcon } from "./icons";
 import { TrashIcon } from "@/assets/icons";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { useState } from "react";
-import type { Blog } from "@/types/category";
+import type { Category } from "@/types/category";
 
-export function ListCategoryComponent({ data }: { data: Blog[] }) {
+export function ListCategoryComponent({ data }: { data: Category[] }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedArticle, setSelectedArticle] = useState<Blog | null>(null);
+  const [selectedArticle, setSelectedArticle] = useState<Category | null>(null);
 
-  const handleDeleteClick = (article: Blog) => {
+  const handleDeleteClick = (article: Category) => {
     setSelectedArticle(article);
     setIsDialogOpen(true);
   };
@@ -51,10 +51,10 @@ export function ListCategoryComponent({ data }: { data: Blog[] }) {
         </TableHeader>
 
         <TableBody>
-          {data.map((category) => (
+          {data.map((category, index) => (
             <TableRow
               className="text-base font-medium text-dark dark:text-white"
-              key={category.name + category.profit}
+              key={category.id || `${category.name || "category"}-${index}`}
             >
               <TableCell className="flex min-w-fit items-center gap-3 pl-5 sm:pl-6 xl:pl-7.5">
                 <div>{category.name}</div>

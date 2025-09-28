@@ -1,4 +1,4 @@
-export interface Blog {
+export interface Category {
   id?: string;
   title: string;
   category: string;
@@ -7,6 +7,9 @@ export interface Blog {
   image?: string;
   createdAt?: string;
   updatedAt?: string;
+  name?: string;
+  profit?: string;
+  description?: string
 }
 
 export interface CreateCategoryRequest {
@@ -18,6 +21,6 @@ export interface CreateCategoryRequest {
 export interface CategoryResponse {
   success: boolean;
   count?: number;
-  data: Blog | Blog[];
+  data: Category | Category[];
   message?: string;
 }
