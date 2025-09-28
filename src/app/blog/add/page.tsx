@@ -12,7 +12,6 @@ import { createBlog } from "@/services/blog.service";
 import { getCategory } from "@/services/category.services";
 import { uploadImage } from "@/lib/image-upload";
 import type { CreateBlogRequest } from "@/types/blog";
-import type { CategoryResponse } from "@/types/category";
 
 export default function FormElementsPage() {
   const [formData, setFormData] = useState({
@@ -33,10 +32,14 @@ export default function FormElementsPage() {
   // Handle image upload for text editor using global function
   const handleImageUpload = uploadImage;
 
-  const compressImage = (file: File, maxWidth: number = 800, quality: number = 0.7): Promise<File> => {
+  const compressImage = (
+    file: File,
+    maxWidth: number = 800,
+    quality: number = 0.7,
+  ): Promise<File> => {
     return new Promise((resolve) => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d')!;
+      const canvas = document.createElement("canvas");
+      const ctx = canvas.getContext("2d")!;
       const img = new Image();
 
       img.onload = () => {
@@ -46,13 +49,17 @@ export default function FormElementsPage() {
 
         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
 
-        canvas.toBlob((blob) => {
-          const compressedFile = new File([blob!], file.name, {
-            type: file.type,
-            lastModified: Date.now(),
-          });
-          resolve(compressedFile);
-        }, file.type, quality);
+        canvas.toBlob(
+          (blob) => {
+            const compressedFile = new File([blob!], file.name, {
+              type: file.type,
+              lastModified: Date.now(),
+            });
+            resolve(compressedFile);
+          },
+          file.type,
+          quality,
+        );
       };
 
       img.src = URL.createObjectURL(file);
@@ -64,9 +71,8 @@ export default function FormElementsPage() {
 
     if (file && file.type.startsWith("image/")) {
       // Compress image if it's larger than 1MB
-      const compressedFile = file.size > 1024 * 1024
-        ? await compressImage(file, 800, 0.7)
-        : file;
+      const compressedFile =
+        file.size > 1024 * 1024 ? await compressImage(file, 800, 0.7) : file;
 
       setFormData((prev) => ({ ...prev, file: compressedFile }));
 
@@ -92,13 +98,14 @@ export default function FormElementsPage() {
       try {
         setLoadingCategories(true);
         const response = await getCategory();
-        const categoryItems = response.data.map((category: any) => ({
+        const categories = Array.isArray(response.data) ? response.data : [response.data];
+        const categoryItems = categories.map((category: any) => ({
           label: category.name,
-          value: category.name.toLowerCase().replace(/\s+/g, '_')
+          value: category.name.toLowerCase().replace(/\s+/g, "_"),
         }));
         setCategories(categoryItems);
       } catch (err) {
-        console.error('Failed to fetch categories:', err);
+        console.error("Failed to fetch categories:", err);
         // Fallback to static categories if API fails
         setCategories([
           { label: "SEO", value: "seo" },
