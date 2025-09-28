@@ -13,12 +13,13 @@ import { PreviewIcon } from "./icons";
 import { TrashIcon } from "@/assets/icons";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { useState } from "react";
+import type { Blog } from "@/types/category";
 
-export function ListCategoryComponent({ data }: { data: any[] }) {
+export function ListCategoryComponent({ data }: { data: Blog[] }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedArticle, setSelectedArticle] = useState<any>(null);
+  const [selectedArticle, setSelectedArticle] = useState<Blog | null>(null);
 
-  const handleDeleteClick = (article: any) => {
+  const handleDeleteClick = (article: Blog) => {
     setSelectedArticle(article);
     setIsDialogOpen(true);
   };
