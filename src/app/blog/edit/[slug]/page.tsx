@@ -116,7 +116,9 @@ export default function EditBlogPage() {
 
         // Fetch blog data
         const blogResponse = await getBlogById(blogId);
-        const blog = blogResponse.data;
+        const blog = Array.isArray(blogResponse.data)
+          ? blogResponse.data[0]
+          : blogResponse.data;
 
         if (blog) {
           setFormData({
