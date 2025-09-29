@@ -19,12 +19,13 @@ export function ListArticleWrapper() {
       const result = await getBlogs();
 
       // Handle empty or null data
-      if (!result.data || (Array.isArray(result.data) && result.data.length === 0)) {
+      if (
+        !result.data ||
+        (Array.isArray(result.data) && result.data.length === 0)
+      ) {
         setData([]);
       } else {
-        const blogs = Array.isArray(result.data)
-          ? result.data
-          : [result.data];
+        const blogs = Array.isArray(result.data) ? result.data : [result.data];
         setData(blogs);
       }
     } catch (err) {
@@ -78,7 +79,7 @@ export function ListArticleWrapper() {
           </h2>
         </div>
         <div className="p-8 text-center">
-          <div className="mx-auto mb-4 h-16 w-16 rounded-full bg-gray-100 dark:bg-gray-700 flex items-center justify-center">
+          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700">
             <svg
               className="h-8 w-8 text-gray-400 dark:text-gray-500"
               fill="none"
@@ -96,8 +97,9 @@ export function ListArticleWrapper() {
           <h3 className="mb-2 text-lg font-semibold text-dark dark:text-white">
             No blogs found
           </h3>
-          <p className="text-gray-600 dark:text-gray-400 mb-4">
-            You haven't created any blog posts yet. Start by creating your first blog post.
+          <p className="mb-4 text-gray-600 dark:text-gray-400">
+            You have not created any blog posts yet. Start by creating your
+            first blog post.
           </p>
           <button
             onClick={fetchBlogs}
