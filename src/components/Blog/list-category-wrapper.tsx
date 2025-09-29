@@ -54,7 +54,7 @@ export function ListCategoryWrapper() {
         </h3>
         <p className="text-gray-600">{error}</p>
         <button
-          onClick={fetchCategories}
+          onClick={() => fetchCategories()}
           className="mt-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
         >
           Retry
@@ -63,5 +63,10 @@ export function ListCategoryWrapper() {
     );
   }
 
-  return <ListCategoryComponent data={data} onDataChange={() => fetchCategories(false)} />;
+  return (
+    <ListCategoryComponent
+      data={data}
+      onDataChange={() => fetchCategories(false)}
+    />
+  );
 }
