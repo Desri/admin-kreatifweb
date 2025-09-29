@@ -61,7 +61,7 @@ export function ListArticleWrapper() {
         </h3>
         <p className="text-gray-600">{error}</p>
         <button
-          onClick={fetchBlogs}
+          onClick={() => fetchBlogs()}
           className="mt-4 rounded bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
         >
           Retry
@@ -102,7 +102,7 @@ export function ListArticleWrapper() {
             first blog post.
           </p>
           <button
-            onClick={fetchBlogs}
+            onClick={() => fetchBlogs()}
             className="rounded bg-primary px-4 py-2 text-white hover:bg-opacity-90"
           >
             Refresh
