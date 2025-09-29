@@ -1,7 +1,18 @@
+export interface Category {
+  _id: string;
+  name: string;
+  description?: string;
+  slug?: string;
+  isActive?: boolean;
+  createdAt?: string;
+  updatedAt?: string;
+}
+
 export interface Blog {
   id?: string;
+  _id?: string;
   title: string;
-  category: string;
+  category: string | Category;
   metaDescription: string;
   content: string;
   image?: string;

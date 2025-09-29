@@ -8,24 +8,45 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import Image from "next/image";
+import Link from "next/link";
 import { PreviewIcon } from "./icons";
 import { TrashIcon } from "@/assets/icons";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { useState } from "react";
 import type { Category } from "@/types/category";
+import { deleteCategory } from "@/services/category.services";
 
-export function ListCategoryComponent({ data }: { data: Category[] }) {
+export function ListCategoryComponent({ data, onDataChange }: { data: Category[]; onDataChange?: () => void }) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedArticle, setSelectedArticle] = useState<Category | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   const handleDeleteClick = (article: Category) => {
     setSelectedArticle(article);
     setIsDialogOpen(true);
   };
 
-  const handleConfirmDelete = () => {
-    console.log("Deleting article:", selectedArticle);
+  const handleConfirmDelete = async () => {
+    if (!selectedArticle?._id) return;
+
+    setIsDeleting(true);
+    setError(null);
+
+    try {
+      await deleteCategory(selectedArticle._id);
+      setIsDialogOpen(false);
+      setSelectedArticle(null);
+
+      // Refresh the data if callback is provided
+      if (onDataChange) {
+        onDataChange();
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to delete category");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -34,6 +55,11 @@ export function ListCategoryComponent({ data }: { data: Category[] }) {
         <h2 className="text-2xl font-bold text-dark dark:text-white">
           List Category
         </h2>
+        {error && (
+          <div className="mt-4 rounded-lg bg-red-100 p-4 text-red-700">
+            {error}
+          </div>
+        )}
       </div>
 
       <Table>
@@ -65,10 +91,12 @@ export function ListCategoryComponent({ data }: { data: Category[] }) {
 
               <TableCell className="xl:pr-7.5">
                 <div className="flex items-center justify-end gap-x-3.5">
-                  <button className="hover:text-primary">
-                    <span className="sr-only">View Article</span>
-                    <PreviewIcon />
-                  </button>
+                  <Link href={`/blog/edit/category/${category._id}`}>
+                    <button className="hover:text-primary">
+                      <span className="sr-only">View Article</span>
+                      <PreviewIcon />
+                    </button>
+                  </Link>
 
                   <button
                     onClick={() => handleDeleteClick(category)}
@@ -88,8 +116,10 @@ export function ListCategoryComponent({ data }: { data: Category[] }) {
         isOpen={isDialogOpen}
         onClose={() => setIsDialogOpen(false)}
         onConfirm={handleConfirmDelete}
-        title="Delete Article"
+        title="Delete Category"
         description={`Are you sure you want to delete "${selectedArticle?.name}"? This action cannot be undone.`}
+        confirmText={isDeleting ? "Deleting..." : "Delete"}
+        isLoading={isDeleting}
       />
     </div>
   );

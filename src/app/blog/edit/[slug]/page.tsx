@@ -1,18 +1,22 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
 import Breadcrumb from "@/components/Breadcrumbs/Breadcrumb";
 import InputGroup from "@/components/FormElements/InputGroup";
 import TextEditor from "@/components/FormElements/TextEditor";
 import { ShowcaseSection } from "@/components/Layouts/showcase-section";
 import { Select } from "@/components/FormElements/select";
 import { TextAreaGroup } from "@/components/FormElements/InputGroup/text-area";
-import { createBlog } from "@/services/blog.service";
+import { getBlogById, updateBlog } from "@/services/blog.service";
 import { getCategory } from "@/services/category.services";
 import { uploadImage } from "@/lib/image-upload";
-import type { CreateBlogRequest } from "@/types/blog";
+import type { CreateBlogRequest, Category } from "@/types/blog";
 
-export default function FormElementsPage() {
+export default function EditBlogPage() {
+  const params = useParams();
+  const router = useRouter();
+  const blogId = params.slug as string;
   const [formData, setFormData] = useState({
     title: "",
     category: "",
@@ -23,6 +27,7 @@ export default function FormElementsPage() {
 
   const [previewUrl, setPreviewUrl] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [success, setSuccess] = useState(false);
   const [categories, setCategories] = useState<any[]>([]);
@@ -93,27 +98,54 @@ export default function FormElementsPage() {
   };
 
   useEffect(() => {
-    const fetchCategories = async () => {
+    const fetchData = async () => {
       try {
-        setLoadingCategories(true);
-        const response = await getCategory();
-        const categories = Array.isArray(response.data)
-          ? response.data
-          : [response.data];
+        setIsLoading(true);
+
+        // Fetch categories
+        const categoryResponse = await getCategory();
+        const categories = Array.isArray(categoryResponse.data)
+          ? categoryResponse.data
+          : [categoryResponse.data];
         const categoryItems = categories.map((category: any) => ({
           label: category.name,
           value: category._id,
         }));
         setCategories(categoryItems);
-      } catch (err) {
-        console.error("Failed to fetch categories:", err);
-      } finally {
         setLoadingCategories(false);
+
+        // Fetch blog data
+        const blogResponse = await getBlogById(blogId);
+        const blog = blogResponse.data;
+
+        if (blog) {
+          setFormData({
+            title: blog.title || "",
+            category: typeof blog.category === 'string'
+              ? blog.category
+              : (blog.category as Category)._id,
+            metaDescription: blog.metaDescription || "",
+            content: blog.content || "",
+            file: null,
+          });
+
+          // Set preview URL if blog has an image
+          if (blog.image) {
+            setPreviewUrl(blog.image);
+          }
+        }
+      } catch (err) {
+        console.error("Failed to fetch data:", err);
+        setError(err instanceof Error ? err.message : "Failed to load blog");
+      } finally {
+        setIsLoading(false);
       }
     };
 
-    fetchCategories();
-  }, []);
+    if (blogId) {
+      fetchData();
+    }
+  }, [blogId]);
 
   // const formatFileSize = (bytes: any) => {
   //   if (bytes === 0) return "0 Bytes";
@@ -151,37 +183,48 @@ export default function FormElementsPage() {
     }
 
     try {
-      const blogData: CreateBlogRequest = {
+      const blogData: Partial<CreateBlogRequest> = {
         title: formData.title.trim(),
         category: formData.category.trim(),
         metaDescription: formData.metaDescription.trim(),
         content: formData.content,
       };
 
-      console.log("Submitting blog data:", blogData); // Debug log
-      await createBlog(blogData, formData.file || undefined);
+      await updateBlog(blogId, blogData, formData.file || undefined);
       setSuccess(true);
-      setFormData({
-        title: "",
-        category: "",
-        metaDescription: "",
-        file: null,
-        content: "",
-      });
-      setPreviewUrl(null);
+
+      // Redirect to blog list after successful update
+      setTimeout(() => {
+        router.push("/blog");
+      }, 1500);
     } catch (err) {
-      setError(err instanceof Error ? err.message : "Failed to create blog");
+      setError(err instanceof Error ? err.message : "Failed to update blog");
     } finally {
       setIsSubmitting(false);
     }
   };
+  if (isLoading) {
+    return (
+      <>
+        <Breadcrumb pageName="Edit Article" />
+        <div className="grid grid-cols-1 gap-9">
+          <div className="flex flex-col gap-9">
+            <ShowcaseSection title="Edit Article" className="space-y-5.5 !p-6.5">
+              <div className="text-center text-gray-500">Loading...</div>
+            </ShowcaseSection>
+          </div>
+        </div>
+      </>
+    );
+  }
+
   return (
     <>
-      <Breadcrumb pageName="Add Article" />
+      <Breadcrumb pageName="Edit Article" />
 
       <div className="grid grid-cols-1 gap-9">
         <div className="flex flex-col gap-9">
-          <ShowcaseSection title="Add Article" className="space-y-5.5 !p-6.5">
+          <ShowcaseSection title="Edit Article" className="space-y-5.5 !p-6.5">
             {error && (
               <div className="rounded-lg bg-red-100 p-4 text-red-700">
                 {error}
@@ -189,7 +232,7 @@ export default function FormElementsPage() {
             )}
             {success && (
               <div className="rounded-lg bg-green-100 p-4 text-green-700">
-                Blog created successfully!
+                Blog updated successfully! Redirecting...
               </div>
             )}
             <form onSubmit={handleSubmit} className="space-y-5.5">
@@ -212,7 +255,7 @@ export default function FormElementsPage() {
                   setFormData((prev) => ({ ...prev, category: _id }))
                 }
                 items={categories}
-                disabled={loadingCategories}
+                disabled={loadingCategories || isLoading}
               />
               <TextAreaGroup
                 label="Meta Description"
@@ -267,7 +310,7 @@ export default function FormElementsPage() {
                 disabled={isSubmitting}
                 className="flex w-full justify-center rounded-lg bg-primary p-[13px] font-medium text-white hover:bg-opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
               >
-                {isSubmitting ? "Submitting..." : "Submit"}
+                {isSubmitting ? "Updating..." : "Update"}
               </button>
             </form>
           </ShowcaseSection>

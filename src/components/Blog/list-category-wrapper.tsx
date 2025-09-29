@@ -10,9 +10,11 @@ export function ListCategoryWrapper() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const fetchCategories = async () => {
+  const fetchCategories = async (showLoading = true) => {
     try {
-      setLoading(true);
+      if (showLoading) {
+        setLoading(true);
+      }
       setError(null);
       const result = await getCategory();
       const categories = Array.isArray(result.data)
@@ -25,7 +27,9 @@ export function ListCategoryWrapper() {
         err instanceof Error ? err.message : "An unknown error occurred",
       );
     } finally {
-      setLoading(false);
+      if (showLoading) {
+        setLoading(false);
+      }
     }
   };
 
@@ -59,5 +63,5 @@ export function ListCategoryWrapper() {
     );
   }
 
-  return <ListCategoryComponent data={data} />;
+  return <ListCategoryComponent data={data} onDataChange={() => fetchCategories(false)} />;
 }

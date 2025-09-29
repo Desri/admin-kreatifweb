@@ -63,13 +63,22 @@ export async function getBlogById(id: string): Promise<BlogResponse> {
 export async function updateBlog(
   id: string,
   blogData: Partial<CreateBlogRequest>,
+  imageFile?: File,
 ): Promise<BlogResponse> {
+  const formData = new FormData();
+
+  if (blogData.title) formData.append('title', blogData.title);
+  if (blogData.category) formData.append('category', blogData.category);
+  if (blogData.metaDescription) formData.append('metaDescription', blogData.metaDescription);
+  if (blogData.content) formData.append('content', blogData.content);
+
+  if (imageFile) {
+    formData.append('image', imageFile);
+  }
+
   const response = await fetch(`${API_BASE_URL}/blogs/${id}`, {
     method: "PUT",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(blogData),
+    body: formData,
   });
 
   if (!response.ok) {

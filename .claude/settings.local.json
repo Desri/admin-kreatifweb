@@ -3,7 +3,9 @@
     "allow": [
       "Bash(npm install:*)",
       "WebFetch(domain:api-kreatifweb.vercel.app)",
-      "Bash(dir:*)"
+      "Bash(dir:*)",
+      "Bash(curl:*)",
+      "Read(//c/Users/DERY/Documents/startup/api-kreatifweb/**)"
     ],
     "deny": [],
     "ask": []

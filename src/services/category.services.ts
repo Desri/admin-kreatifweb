@@ -52,52 +52,52 @@ export async function getCategory(): Promise<CategoryResponse> {
   }
 }
 
-// export async function getBlogById(id: string): Promise<BlogResponse> {
-//   const response = await fetch(`${API_BASE_URL}/blogs/${id}`, {
-//     method: "GET",
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//   });
+export async function getCategoryById(id: string): Promise<CategoryResponse> {
+  const response = await fetch(`${API_BASE_URL}/categories/${id}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
-//   if (!response.ok) {
-//     throw new Error("Failed to fetch blog");
-//   }
+  if (!response.ok) {
+    throw new Error("Failed to fetch category");
+  }
 
-//   return response.json();
-// }
+  return response.json();
+}
 
-// export async function updateBlog(
-//   id: string,
-//   blogData: Partial<CreateBlogRequest>,
-// ): Promise<BlogResponse> {
-//   const response = await fetch(`${API_BASE_URL}/blogs/${id}`, {
-//     method: "PUT",
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//     body: JSON.stringify(blogData),
-//   });
+export async function updateCategory(
+  id: string,
+  categoryData: Partial<CreateCategoryRequest>,
+): Promise<CategoryResponse> {
+  const response = await fetch(`${API_BASE_URL}/categories/${id}`, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify(categoryData),
+  });
 
-//   if (!response.ok) {
-//     const error = await response.json().catch(() => ({}));
-//     throw new Error(error.message || "Failed to update blog");
-//   }
+  if (!response.ok) {
+    const error = await response.json().catch(() => ({}));
+    throw new Error(error.message || "Failed to update category");
+  }
 
-//   return response.json();
-// }
+  return response.json();
+}
 
-// export async function deleteBlog(id: string): Promise<BlogResponse> {
-//   const response = await fetch(`${API_BASE_URL}/blogs/${id}`, {
-//     method: "DELETE",
-//     headers: {
-//       "Content-Type": "application/json",
-//     },
-//   });
+export async function deleteCategory(id: string): Promise<CategoryResponse> {
+  const response = await fetch(`${API_BASE_URL}/categories/${id}`, {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
 
-//   if (!response.ok) {
-//     throw new Error("Failed to delete blog");
-//   }
+  if (!response.ok) {
+    throw new Error("Failed to delete category");
+  }
 
-//   return response.json();
-// }
+  return response.json();
+}

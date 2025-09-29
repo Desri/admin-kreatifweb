@@ -8,23 +8,52 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import Image from "next/image";
+import Link from "next/link";
 import { PreviewIcon } from "./icons";
 import { TrashIcon } from "@/assets/icons";
 import { ConfirmationDialog } from "@/components/ui/confirmation-dialog";
 import { useState } from "react";
+import { Blog } from "@/types/blog";
+import { deleteBlog } from "@/services/blog.service";
 
-export function ListArticleComponent({ data }: { data: any[] }) {
+export function ListArticleComponent({
+  data,
+  onDataChange,
+}: {
+  data: Blog[];
+  onDataChange?: () => void;
+}) {
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [selectedArticle, setSelectedArticle] = useState<any>(null);
+  const [selectedArticle, setSelectedArticle] = useState<Blog | null>(null);
+  const [isDeleting, setIsDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
-  const handleDeleteClick = (article: any) => {
+  const handleDeleteClick = (article: Blog) => {
     setSelectedArticle(article);
     setIsDialogOpen(true);
   };
 
-  const handleConfirmDelete = () => {
-    console.log("Deleting article:", selectedArticle);
+  const handleConfirmDelete = async () => {
+    const blogId = selectedArticle?._id || selectedArticle?.id;
+    if (!blogId) return;
+
+    setIsDeleting(true);
+    setError(null);
+
+    try {
+      await deleteBlog(blogId);
+      setIsDialogOpen(false);
+      setSelectedArticle(null);
+
+      // Refresh the data if callback is provided
+      if (onDataChange) {
+        onDataChange();
+      }
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Failed to delete blog");
+    } finally {
+      setIsDeleting(false);
+    }
   };
 
   return (
@@ -33,6 +62,11 @@ export function ListArticleComponent({ data }: { data: any[] }) {
         <h2 className="text-2xl font-bold text-dark dark:text-white">
           List Article
         </h2>
+        {error && (
+          <div className="mt-4 rounded-lg bg-red-100 p-4 text-red-700">
+            {error}
+          </div>
+        )}
       </div>
 
       <Table>
@@ -51,47 +85,57 @@ export function ListArticleComponent({ data }: { data: any[] }) {
         </TableHeader>
 
         <TableBody>
-          {data.map((product) => (
-            <TableRow
-              className="text-base font-medium text-dark dark:text-white"
-              key={product.name + product.profit}
-            >
-              <TableCell className="flex min-w-fit items-center gap-3 pl-5 sm:pl-6 xl:pl-7.5">
-                <Image
-                  src={product.image}
-                  className="aspect-[6/5] w-15 rounded-[5px] object-cover"
-                  width={60}
-                  height={50}
-                  alt={"Image for product " + product.name}
-                  role="presentation"
-                />
-                <div>{product.name}</div>
-              </TableCell>
-
-              <TableCell>{product.category}</TableCell>
-
-              <TableCell>${product.price}</TableCell>
-
-              <TableCell>{product.sold}</TableCell>
-
-              <TableCell className="xl:pr-7.5">
-                <div className="flex items-center justify-end gap-x-3.5">
-                  <button className="hover:text-primary">
-                    <span className="sr-only">View Article</span>
-                    <PreviewIcon />
-                  </button>
-
-                  <button
-                    onClick={() => handleDeleteClick(product)}
-                    className="hover:text-primary"
-                  >
-                    <span className="sr-only">Delete Article</span>
-                    <TrashIcon />
-                  </button>
+          {data.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={5} className="py-8 text-center">
+                <div className="text-gray-500 dark:text-gray-400">
+                  No blogs available
                 </div>
               </TableCell>
             </TableRow>
-          ))}
+          ) : (
+            data.map((blog, index) => (
+              <TableRow
+                className="text-base font-medium text-dark dark:text-white"
+                key={blog._id || `blog-${index}`}
+              >
+                <TableCell className="flex min-w-fit items-center gap-3 pl-5 sm:pl-6 xl:pl-7.5">
+                  <div>{blog.title}</div>
+                </TableCell>
+
+                <TableCell>
+                  {typeof blog.category === "string"
+                    ? blog.category
+                    : blog.category.name}
+                </TableCell>
+
+                <TableCell className="max-w-xs truncate">
+                  {blog.metaDescription}
+                </TableCell>
+
+                <TableCell>Active</TableCell>
+
+                <TableCell className="xl:pr-7.5">
+                  <div className="flex items-center justify-end gap-x-3.5">
+                    <Link href={`/blog/edit/${blog._id}`}>
+                      <button className="hover:text-primary">
+                        <span className="sr-only">View Article</span>
+                        <PreviewIcon />
+                      </button>
+                    </Link>
+
+                    <button
+                      onClick={() => handleDeleteClick(blog)}
+                      className="hover:text-primary"
+                    >
+                      <span className="sr-only">Delete Article</span>
+                      <TrashIcon />
+                    </button>
+                  </div>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
       </Table>
 
@@ -100,7 +144,9 @@ export function ListArticleComponent({ data }: { data: any[] }) {
         onClose={() => setIsDialogOpen(false)}
         onConfirm={handleConfirmDelete}
         title="Delete Article"
-        description={`Are you sure you want to delete "${selectedArticle?.name}"? This action cannot be undone.`}
+        description={`Are you sure you want to delete "${selectedArticle?.title}"? This action cannot be undone.`}
+        confirmText={isDeleting ? "Deleting..." : "Delete"}
+        isLoading={isDeleting}
       />
     </div>
   );

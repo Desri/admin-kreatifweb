@@ -11,6 +11,7 @@ interface ConfirmationDialogProps {
   description: string;
   confirmText?: string;
   cancelText?: string;
+  isLoading?: boolean;
 }
 
 export function ConfirmationDialog({
@@ -21,6 +22,7 @@ export function ConfirmationDialog({
   description,
   confirmText = "Delete",
   cancelText = "Cancel",
+  isLoading = false,
 }: ConfirmationDialogProps) {
   useEffect(() => {
     if (isOpen) {
@@ -55,17 +57,16 @@ export function ConfirmationDialog({
         <div className="flex justify-end gap-3">
           <button
             onClick={onClose}
-            className="rounded-lg border border-stroke px-4 py-2 font-medium text-dark transition hover:bg-gray-2 dark:border-dark-3 dark:text-white dark:hover:bg-dark-3"
+            disabled={isLoading}
+            className="rounded-lg border border-stroke px-4 py-2 font-medium text-dark transition hover:bg-gray-2 disabled:cursor-not-allowed disabled:opacity-50 dark:border-dark-3 dark:text-white dark:hover:bg-dark-3"
           >
             {cancelText}
           </button>
 
           <button
-            onClick={() => {
-              onConfirm();
-              onClose();
-            }}
-            className="rounded-lg bg-red px-4 py-2 font-medium text-white transition hover:bg-opacity-90"
+            onClick={onConfirm}
+            disabled={isLoading}
+            className="rounded-lg bg-red px-4 py-2 font-medium text-white transition hover:bg-opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
           >
             {confirmText}
           </button>
