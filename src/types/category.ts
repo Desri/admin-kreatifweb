@@ -10,7 +10,8 @@ export interface Category {
   updatedAt?: string;
   name?: string;
   profit?: string;
-  description?: string
+  description?: string;
+  articleCount?: number;
 }
 
 export interface CreateCategoryRequest {

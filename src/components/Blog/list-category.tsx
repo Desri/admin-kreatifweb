@@ -69,6 +69,7 @@ export function ListCategoryComponent({ data, onDataChange }: { data: Category[]
               Title
             </TableHead>
             <TableHead>Description</TableHead>
+            <TableHead>Articles</TableHead>
             <TableHead>Status</TableHead>
             <TableHead className="pr-5 text-right sm:pr-6 xl:pr-7.5">
               Action
@@ -87,6 +88,7 @@ export function ListCategoryComponent({ data, onDataChange }: { data: Category[]
               </TableCell>
 
               <TableCell>{category.description}</TableCell>
+              <TableCell>{category.articleCount || 0}</TableCell>
               <TableCell>Active</TableCell>
 
               <TableCell className="xl:pr-7.5">

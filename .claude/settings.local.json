@@ -5,7 +5,12 @@
       "WebFetch(domain:api-kreatifweb.vercel.app)",
       "Bash(dir:*)",
       "Bash(curl:*)",
-      "Read(//c/Users/DERY/Documents/startup/api-kreatifweb/**)"
+      "Read(//c/Users/DERY/Documents/startup/api-kreatifweb/**)",
+      "Read(//c/Users/DERY/Documents/startup/kreatifweb/src/components/footer/**)",
+      "Read(//c/Users/DERY/Documents/startup/kreatifweb/src/components/blog/**)",
+      "Read(//c/Users/DERY/Documents/startup/kreatifweb/src/services/**)",
+      "Read(//c/Users/DERY/Documents/startup/kreatifweb/**)",
+      "Bash(findstr:*)"
     ],
     "deny": [],
     "ask": []
