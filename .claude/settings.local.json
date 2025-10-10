@@ -10,7 +10,8 @@
       "Read(//c/Users/DERY/Documents/startup/kreatifweb/src/components/blog/**)",
       "Read(//c/Users/DERY/Documents/startup/kreatifweb/src/services/**)",
       "Read(//c/Users/DERY/Documents/startup/kreatifweb/**)",
-      "Bash(findstr:*)"
+      "Bash(findstr:*)",
+      "Bash(npm run dev:*)"
     ],
     "deny": [],
     "ask": []

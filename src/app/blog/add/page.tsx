@@ -262,6 +262,7 @@ export default function FormElementsPage() {
                 }
                 onImageUpload={handleImageUpload}
               />
+
               <button
                 type="submit"
                 disabled={isSubmitting}
