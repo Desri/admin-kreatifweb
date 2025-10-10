@@ -81,6 +81,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
         quillInstanceRef.current = null;
       }
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Update editor content when value changes externally

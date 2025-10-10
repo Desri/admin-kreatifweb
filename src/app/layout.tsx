@@ -5,7 +5,7 @@ import { Sidebar } from "@/components/Layouts/sidebar";
 
 import "flatpickr/dist/flatpickr.min.css";
 import "jsvectormap/dist/jsvectormap.css";
-import "react-quill/dist/quill.snow.css";
+import "quill/dist/quill.snow.css";
 
 import { Header } from "@/components/Layouts/header";
 import type { Metadata } from "next";
