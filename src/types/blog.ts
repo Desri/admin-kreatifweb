@@ -16,6 +16,7 @@ export interface Blog {
   metaDescription: string;
   content: string;
   image?: string;
+  readCount?: number;
   createdAt?: string;
   updatedAt?: string;
 }
