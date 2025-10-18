@@ -113,7 +113,9 @@ export function SEOManagementComponent({
                     </td>
                     <td className="px-4 py-5">
                       <span className="inline-flex rounded-full bg-blue-100 px-3 py-1 text-sm font-medium text-blue-800 dark:bg-blue-900 dark:text-blue-200">
-                        {blog.category?.name || "Uncategorized"}
+                        {typeof blog.category === "string"
+                          ? blog.category
+                          : blog.category?.name || "Uncategorized"}
                       </span>
                     </td>
                     <td className="px-4 py-5">
