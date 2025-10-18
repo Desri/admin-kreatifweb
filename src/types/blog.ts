@@ -10,14 +10,15 @@ export interface Category {
 
 export interface Blog {
   id?: string;
-  _id?: string;
+  _id: string;
   title: string;
   category: string | Category;
   metaDescription: string;
   content: string;
   image?: string;
+  published: boolean;
   readCount?: number;
-  createdAt?: string;
+  createdAt: string;
   updatedAt?: string;
 }
 
