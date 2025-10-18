@@ -186,3 +186,27 @@ export function ArrowLeftIcon(props: PropsType) {
     </svg>
   );
 }
+
+export function SEOIcon(props: PropsType) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={24}
+      height={24}
+      viewBox="0 0 24 24"
+      fill="none"
+      {...props}
+    >
+      <path
+        fillRule="evenodd"
+        clipRule="evenodd"
+        d="M10.5 1.75a8.75 8.75 0 105.476 15.584l4.845 4.845a.75.75 0 101.06-1.06l-4.844-4.845A8.75 8.75 0 0010.5 1.75zM3.25 10.5a7.25 7.25 0 1114.5 0 7.25 7.25 0 01-14.5 0z"
+        fill="currentColor"
+      />
+      <path
+        d="M8.5 7.75a.75.75 0 01.75.75v1h1.5v-1a.75.75 0 011.5 0v1h.5a.75.75 0 010 1.5h-.5v1a.75.75 0 01-1.5 0v-1h-1.5v1a.75.75 0 01-1.5 0v-1h-.5a.75.75 0 010-1.5h.5v-1a.75.75 0 01.75-.75z"
+        fill="currentColor"
+      />
+    </svg>
+  );
+}

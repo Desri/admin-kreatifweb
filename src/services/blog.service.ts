@@ -103,3 +103,48 @@ export async function deleteBlog(id: string): Promise<BlogResponse> {
 
   return response.json();
 }
+
+export async function publishBlog(id: string): Promise<BlogResponse> {
+  const response = await fetch(`${API_BASE_URL}/blogs/${id}/publish`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to publish blog");
+  }
+
+  return response.json();
+}
+
+export async function unpublishBlog(id: string): Promise<BlogResponse> {
+  const response = await fetch(`${API_BASE_URL}/blogs/${id}/unpublish`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to unpublish blog");
+  }
+
+  return response.json();
+}
+
+export async function togglePublishBlog(id: string): Promise<BlogResponse> {
+  const response = await fetch(`${API_BASE_URL}/blogs/${id}/toggle-publish`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
+  if (!response.ok) {
+    throw new Error("Failed to toggle publish status");
+  }
+
+  return response.json();
+}
