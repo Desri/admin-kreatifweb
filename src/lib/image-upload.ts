@@ -4,6 +4,12 @@
  */
 export async function uploadImage(file: File): Promise<string> {
   try {
+    // Validate file size (max 5MB)
+    const maxSize = 5 * 1024 * 1024; // 5MB
+    if (file.size > maxSize) {
+      throw new Error('Image size must be less than 5MB. Please compress your image.');
+    }
+
     // Create FormData for image upload
     const formData = new FormData();
     formData.append('image', file);
@@ -15,35 +21,36 @@ export async function uploadImage(file: File): Promise<string> {
     });
 
     if (!response.ok) {
-      throw new Error('Failed to upload image');
+      // Check if endpoint doesn't exist
+      if (response.status === 404) {
+        throw new Error('Upload endpoint not found. Please configure the /api/upload endpoint on your backend server.');
+      }
+
+      const errorData = await response.json().catch(() => ({}));
+      throw new Error(errorData.message || `Failed to upload image (Status: ${response.status})`);
     }
 
     const result = await response.json();
+
+    if (!result.url) {
+      throw new Error('Image upload did not return a URL');
+    }
+
     return result.url; // Return the image URL
   } catch (error) {
     console.error('Image upload failed:', error);
-    // Fallback: compress and convert to base64 (still not ideal but smaller)
-    return new Promise((resolve) => {
-      const canvas = document.createElement('canvas');
-      const ctx = canvas.getContext('2d')!;
-      const img = new Image();
 
-      img.onload = () => {
-        // Compress to max 400px width for inline images
-        const ratio = Math.min(400 / img.width, 400 / img.height);
-        canvas.width = img.width * ratio;
-        canvas.height = img.height * ratio;
+    // Show user-friendly error message
+    const errorMessage = error instanceof Error ? error.message : 'Failed to upload image';
 
-        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+    // Check if it's a network error
+    if (error instanceof TypeError && error.message.includes('fetch')) {
+      alert(`Network Error: Cannot connect to upload server.\n\nPlease check your internet connection.`);
+    } else {
+      alert(`Image Upload Error: ${errorMessage}\n\nPlease contact support or try again later.`);
+    }
 
-        canvas.toBlob((blob) => {
-          const reader = new FileReader();
-          reader.onload = () => resolve(reader.result as string);
-          reader.readAsDataURL(blob!);
-        }, file.type, 0.5); // Lower quality for inline images
-      };
-
-      img.src = URL.createObjectURL(file);
-    });
+    // Don't use base64 fallback - throw the error instead
+    throw error;
   }
 }

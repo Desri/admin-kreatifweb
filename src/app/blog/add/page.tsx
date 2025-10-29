@@ -29,7 +29,14 @@ export default function FormElementsPage() {
   const [loadingCategories, setLoadingCategories] = useState(true);
 
   // Handle image upload for text editor using global function
-  const handleImageUpload = uploadImage;
+  const handleImageUpload = async (file: File): Promise<string> => {
+    try {
+      return await uploadImage(file);
+    } catch (error) {
+      // Error is already shown by uploadImage function
+      throw error;
+    }
+  };
 
   const compressImage = (
     file: File,
@@ -150,6 +157,21 @@ export default function FormElementsPage() {
       return;
     }
 
+    // Check for base64 images in content
+    if (formData.content.includes('data:image')) {
+      setError("Content contains embedded images (base64). Please ensure all images are uploaded to the server first. Try removing and re-adding the images.");
+      setIsSubmitting(false);
+      return;
+    }
+
+    // Validate content size (max 1MB for content text)
+    const contentSize = new Blob([formData.content]).size;
+    if (contentSize > 1024 * 1024) {
+      setError(`Content is too large (${(contentSize / 1024 / 1024).toFixed(2)}MB). Please reduce the content size or remove large embedded images.`);
+      setIsSubmitting(false);
+      return;
+    }
+
     try {
       const blogData: CreateBlogRequest = {
         title: formData.title.trim(),
@@ -158,7 +180,10 @@ export default function FormElementsPage() {
         content: formData.content,
       };
 
-      console.log("Submitting blog data:", blogData); // Debug log
+      console.log("Submitting blog data:", {
+        ...blogData,
+        contentSize: `${(contentSize / 1024).toFixed(2)}KB`,
+      });
       await createBlog(blogData, formData.file || undefined);
       setSuccess(true);
       setFormData({

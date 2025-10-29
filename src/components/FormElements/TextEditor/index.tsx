@@ -29,6 +29,7 @@ const TextEditor: React.FC<TextEditorProps> = ({
   handleChange,
   onChange,
   defaultValue,
+  onImageUpload,
 }) => {
   const editorRef = useRef<HTMLDivElement>(null);
   const quillInstanceRef = useRef<any>(null);
@@ -54,6 +55,47 @@ const TextEditor: React.FC<TextEditorProps> = ({
               ["clean"],
             ],
           },
+        });
+
+        // Custom image handler
+        const toolbar = quill.getModule('toolbar');
+        toolbar.addHandler('image', () => {
+          const input = document.createElement('input');
+          input.setAttribute('type', 'file');
+          input.setAttribute('accept', 'image/*');
+          input.click();
+
+          input.onchange = async () => {
+            const file = input.files?.[0];
+            if (file) {
+              if (onImageUpload) {
+                try {
+                  // Show loading state
+                  const range = quill.getSelection(true);
+                  quill.insertText(range.index, 'Uploading image...');
+                  quill.setSelection(range.index + 19);
+
+                  // Upload image
+                  const url = await onImageUpload(file);
+
+                  // Remove loading text and insert image
+                  quill.deleteText(range.index, 19);
+                  quill.insertEmbed(range.index, 'image', url);
+                  quill.setSelection(range.index + 1);
+                } catch (error) {
+                  console.error('Image upload failed:', error);
+                  // Remove loading text on error
+                  const range = quill.getSelection();
+                  if (range) {
+                    quill.deleteText(range.index - 19, 19);
+                  }
+                }
+              } else {
+                // Fallback: show warning if no upload handler provided
+                alert('Image upload handler not configured. Please contact support.');
+              }
+            }
+          };
         });
 
         // Set initial value
