@@ -73,15 +73,22 @@ export function ListArticleWrapper() {
   if (data.length === 0) {
     return (
       <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
-        <div className="px-6 py-4 sm:px-7 sm:py-5 xl:px-8.5">
-          <h2 className="text-2xl font-bold text-dark dark:text-white">
-            List Article
-          </h2>
+        <div className="border-b border-stroke px-6 py-4 dark:border-dark-3 sm:px-7 sm:py-5 xl:px-8.5">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-2xl font-bold text-dark dark:text-white">
+                Articles
+              </h2>
+              <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
+                Manage and monitor your blog content
+              </p>
+            </div>
+          </div>
         </div>
-        <div className="p-8 text-center">
-          <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-gray-100 dark:bg-gray-700">
+        <div className="p-12 text-center">
+          <div className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-primary/10">
             <svg
-              className="h-8 w-8 text-gray-400 dark:text-gray-500"
+              className="h-10 w-10 text-primary"
               fill="none"
               stroke="currentColor"
               viewBox="0 0 24 24"
@@ -94,19 +101,29 @@ export function ListArticleWrapper() {
               />
             </svg>
           </div>
-          <h3 className="mb-2 text-lg font-semibold text-dark dark:text-white">
-            No blogs found
+          <h3 className="mb-2 text-xl font-bold text-dark dark:text-white">
+            No articles yet
           </h3>
-          <p className="mb-4 text-gray-600 dark:text-gray-400">
-            You have not created any blog posts yet. Start by creating your
-            first blog post.
+          <p className="mb-6 text-gray-600 dark:text-gray-400">
+            Get started by creating your first blog post and share your insights with the world.
           </p>
-          <button
-            onClick={() => fetchBlogs()}
-            className="rounded bg-primary px-4 py-2 text-white hover:bg-opacity-90"
-          >
-            Refresh
-          </button>
+          <div className="flex items-center justify-center gap-3">
+            <a
+              href="/blog/create"
+              className="inline-flex items-center gap-2 rounded-lg bg-primary px-5 py-2.5 text-sm font-medium text-white hover:bg-opacity-90"
+            >
+              <svg className="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+              </svg>
+              Create Article
+            </a>
+            <button
+              onClick={() => fetchBlogs()}
+              className="rounded-lg border border-stroke px-5 py-2.5 text-sm font-medium text-dark hover:bg-gray-50 dark:border-dark-3 dark:text-white dark:hover:bg-gray-800"
+            >
+              Refresh
+            </button>
+          </div>
         </div>
       </div>
     );
