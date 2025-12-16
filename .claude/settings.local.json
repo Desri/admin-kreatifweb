@@ -13,7 +13,9 @@
       "Bash(findstr:*)",
       "Bash(npm run dev:*)",
       "Bash(npm uninstall:*)",
-      "Bash(npm run build:*)"
+      "Bash(npm run build:*)",
+      "Bash(npm audit)",
+      "Bash(npm audit fix:*)"
     ],
     "deny": [],
     "ask": []
