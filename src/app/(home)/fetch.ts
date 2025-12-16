@@ -11,12 +11,12 @@ export async function getOverviewData() {
       value: 4220,
       growthRate: 4.35,
     },
-    products: {
-      value: 3456,
+    clientActive: {
+      value: 1,
       growthRate: 2.59,
     },
-    users: {
-      value: 3456,
+    totalClient: {
+      value: 25,
       growthRate: -0.95,
     },
   };

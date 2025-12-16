@@ -6,6 +6,7 @@ export const NAV_DATA = [
     items: [
       {
         title: "Dashboard",
+        url: "/",
         icon: Icons.HomeIcon,
         items: [],
       },
@@ -72,31 +73,11 @@ export const NAV_DATA = [
           },
         ],
       },
-      {
-        title: "Pages",
-        icon: Icons.Alphabet,
-        items: [
-          {
-            title: "Settings",
-            url: "/pages/settings",
-          },
-        ],
-      },
     ],
   },
   {
     label: "OTHERS",
     items: [
-      {
-        title: "Charts",
-        icon: Icons.PieChart,
-        items: [
-          {
-            title: "Basic Chart",
-            url: "/charts/basic-chart",
-          },
-        ],
-      },
       {
         title: "UI Elements",
         icon: Icons.FourCircle,
