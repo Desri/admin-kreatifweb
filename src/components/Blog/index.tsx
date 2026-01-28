@@ -1,13 +1,7 @@
 "use client";
 
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+import { Table, Select, Input } from "antd";
+import type { ColumnsType } from "antd/es/table";
 import Link from "next/link";
 import { PreviewIcon } from "./icons";
 import { TrashIcon } from "@/assets/icons";
@@ -117,6 +111,136 @@ export function ListArticleComponent({
     });
   };
 
+  const columns: ColumnsType<Blog> = [
+    {
+      title: 'Article',
+      dataIndex: 'title',
+      key: 'title',
+      width: 400,
+      render: (_, blog) => (
+        <div className="flex items-start gap-3">
+          {blog.image && (
+            <img
+              src={blog.image}
+              alt={blog.title}
+              className="h-12 w-12 rounded-lg object-cover"
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+              }}
+            />
+          )}
+          <div className="flex-1">
+            <h3 className="font-semibold text-dark dark:text-white line-clamp-1">
+              {blog.title}
+            </h3>
+            <p className="mt-1 text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
+              {blog.metaDescription}
+            </p>
+          </div>
+        </div>
+      ),
+    },
+    {
+      title: 'Category',
+      dataIndex: 'category',
+      key: 'category',
+      width: 200,
+      render: (category) => (
+        <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/20 dark:text-blue-400">
+          {typeof category === "string" ? category : category.name}
+        </span>
+      ),
+    },
+    {
+      title: 'Status',
+      dataIndex: 'published',
+      key: 'published',
+      width: 100,
+      render: (published: boolean) =>
+        published ? (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700 dark:bg-green-900/20 dark:text-green-400">
+            <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 8 8">
+              <circle cx="4" cy="4" r="3" />
+            </svg>
+            Published
+          </span>
+        ) : (
+          <span className="inline-flex items-center gap-1.5 rounded-full bg-yellow-50 px-2.5 py-1 text-xs font-medium text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400">
+            <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 8 8">
+              <circle cx="4" cy="4" r="3" />
+            </svg>
+            Draft
+          </span>
+        ),
+    },
+    {
+      title: 'Views',
+      dataIndex: 'readCount',
+      key: 'readCount',
+      width: 100,
+      render: (readCount: number) => (
+        <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400">
+          <svg
+            className="h-4 w-4"
+            fill="none"
+            stroke="currentColor"
+            viewBox="0 0 24 24"
+          >
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+            />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              strokeWidth={2}
+              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+            />
+          </svg>
+          <span className="font-medium">{(readCount ?? 0).toLocaleString()}</span>
+        </div>
+      ),
+    },
+    {
+      title: 'Published Date',
+      dataIndex: 'createdAt',
+      key: 'createdAt',
+      width: 120,
+      render: (createdAt: string) => (
+        <span className="text-gray-600 dark:text-gray-400">
+          {formatDate(createdAt)}
+        </span>
+      ),
+    },
+    {
+      title: 'Actions',
+      key: 'actions',
+      align: 'right',
+      render: (_, blog) => (
+        <div className="flex items-center justify-end gap-x-2">
+          <Link href={`/blog/edit/${blog._id}`}>
+            <button
+              className="rounded-lg p-2 text-gray-600 hover:bg-gray-100 hover:text-primary dark:text-gray-400 dark:hover:bg-gray-700"
+              title="Edit article"
+            >
+              <PreviewIcon />
+            </button>
+          </Link>
+
+          <button
+            onClick={() => handleDeleteClick(blog)}
+            className="rounded-lg p-2 text-gray-600 hover:bg-red-50 hover:text-red-600 dark:text-gray-400 dark:hover:bg-red-900/20"
+            title="Delete article"
+          >
+            <TrashIcon />
+          </button>
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div className="rounded-[10px] bg-white shadow-1 dark:bg-gray-dark dark:shadow-card">
       <div className="border-b border-stroke px-6 py-4 dark:border-dark-3 sm:px-7 sm:py-5 xl:px-8.5">
@@ -161,47 +285,52 @@ export function ListArticleComponent({
 
         {/* Search and Filters */}
         <div className="mt-6 flex flex-col gap-4 sm:flex-row sm:items-center">
-          <div className="relative flex-1">
-            <svg
-              className="absolute left-3 top-1/2 h-5 w-5 -translate-y-1/2 text-gray-400"
-              fill="none"
-              stroke="currentColor"
-              viewBox="0 0 24 24"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-              />
-            </svg>
-            <input
-              type="text"
+          <div className="flex-1">
+            <Input
               placeholder="Search by title, category, or description..."
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full rounded-lg border border-stroke bg-transparent py-2.5 pl-10 pr-4 text-dark outline-none focus:border-primary dark:border-dark-3 dark:text-white"
+              prefix={
+                <svg
+                  className="h-7 w-5 text-gray-400"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              }
+              allowClear
             />
           </div>
           <div className="flex gap-3">
-            <select
+            <Select
               value={filterStatus}
-              onChange={(e) => setFilterStatus(e.target.value as "all" | "published" | "draft")}
-              className="rounded-lg border border-stroke bg-transparent px-4 py-2.5 text-dark outline-none focus:border-primary dark:border-dark-3 dark:text-white"
-            >
-              <option value="all">All Status</option>
-              <option value="published">Published</option>
-              <option value="draft">Draft</option>
-            </select>
-            <select
+              className="py-2"
+              onChange={(value) => setFilterStatus(value)}
+              style={{ width: 150 }}
+              options={[
+                { value: "all", label: "All Status" },
+                { value: "published", label: "Published" },
+                { value: "draft", label: "Draft" },
+              ]}
+            />
+            <Select
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as "newest" | "oldest" | "views")}
-              className="rounded-lg border border-stroke bg-transparent px-4 py-2.5 text-dark outline-none focus:border-primary dark:border-dark-3 dark:text-white"
-            >
-              <option value="newest">Newest First</option>
-              <option value="oldest">Oldest First</option>
-              <option value="views">Most Views</option>
-            </select>
+              onChange={(value) => setSortBy(value)}
+              className="py-2"
+              style={{ width: 150 }}
+              options={[
+                { value: "newest", label: "Newest First" },
+                { value: "oldest", label: "Oldest First" },
+                { value: "views", label: "Most Views" },
+              ]}
+            />
           </div>
         </div>
 
@@ -220,170 +349,49 @@ export function ListArticleComponent({
       </div>
 
       <div className="overflow-x-auto">
-        <Table>
-          <TableHeader>
-            <TableRow className="border-t text-sm font-semibold [&>th]:h-auto [&>th]:py-3 sm:[&>th]:py-4">
-              <TableHead className="min-w-[250px] pl-5 sm:pl-6 xl:pl-7.5">
-                Article
-              </TableHead>
-              <TableHead className="min-w-[120px]">Category</TableHead>
-              <TableHead className="min-w-[100px]">Status</TableHead>
-              <TableHead className="min-w-[100px]">Views</TableHead>
-              <TableHead className="min-w-[120px]">Published Date</TableHead>
-              <TableHead className="pr-5 text-right sm:pr-6 xl:pr-7.5">
-                Actions
-              </TableHead>
-            </TableRow>
-          </TableHeader>
-
-          <TableBody>
-            {filteredAndSortedData.length === 0 ? (
-              <TableRow>
-                <TableCell colSpan={6} className="py-12 text-center">
-                  <div className="flex flex-col items-center gap-3">
-                    <svg
-                      className="h-12 w-12 text-gray-300 dark:text-gray-600"
-                      fill="none"
-                      stroke="currentColor"
-                      viewBox="0 0 24 24"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        strokeWidth={2}
-                        d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
-                      />
-                    </svg>
-                    <div>
-                      <p className="font-medium text-gray-600 dark:text-gray-400">
-                        {searchTerm || filterStatus !== "all"
-                          ? "No articles match your filters"
-                          : "No articles found"}
-                      </p>
-                      {(searchTerm || filterStatus !== "all") && (
-                        <button
-                          onClick={() => {
-                            setSearchTerm("");
-                            setFilterStatus("all");
-                          }}
-                          className="mt-2 text-sm text-primary hover:underline"
-                        >
-                          Clear filters
-                        </button>
-                      )}
-                    </div>
-                  </div>
-                </TableCell>
-              </TableRow>
-            ) : (
-              filteredAndSortedData.map((blog, index) => (
-                <TableRow
-                  className="text-sm hover:bg-gray-50 dark:hover:bg-gray-800/50"
-                  key={blog._id || `blog-${index}`}
+        <Table
+          columns={columns}
+          dataSource={filteredAndSortedData}
+          rowKey={(record) => record._id || record.id || ''}
+          pagination={false}
+          locale={{
+            emptyText: (
+              <div className="flex flex-col items-center gap-3 py-12">
+                <svg
+                  className="h-12 w-12 text-gray-300 dark:text-gray-600"
+                  fill="none"
+                  stroke="currentColor"
+                  viewBox="0 0 24 24"
                 >
-                  <TableCell className="pl-5 sm:pl-6 xl:pl-7.5">
-                    <div className="flex items-start gap-3">
-                      {blog.image && (
-                        <img
-                          src={blog.image}
-                          alt={blog.title}
-                          className="h-12 w-12 rounded-lg object-cover"
-                          onError={(e) => {
-                            e.currentTarget.style.display = "none";
-                          }}
-                        />
-                      )}
-                      <div className="flex-1">
-                        <h3 className="font-semibold text-dark dark:text-white line-clamp-1">
-                          {blog.title}
-                        </h3>
-                        <p className="mt-1 text-xs text-gray-600 dark:text-gray-400 line-clamp-2">
-                          {blog.metaDescription}
-                        </p>
-                      </div>
-                    </div>
-                  </TableCell>
-
-                  <TableCell>
-                    <span className="inline-flex items-center rounded-full bg-blue-50 px-2.5 py-1 text-xs font-medium text-blue-700 dark:bg-blue-900/20 dark:text-blue-400">
-                      {typeof blog.category === "string"
-                        ? blog.category
-                        : blog.category.name}
-                    </span>
-                  </TableCell>
-
-                  <TableCell>
-                    {blog.published ? (
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-green-50 px-2.5 py-1 text-xs font-medium text-green-700 dark:bg-green-900/20 dark:text-green-400">
-                        <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 8 8">
-                          <circle cx="4" cy="4" r="3" />
-                        </svg>
-                        Published
-                      </span>
-                    ) : (
-                      <span className="inline-flex items-center gap-1.5 rounded-full bg-yellow-50 px-2.5 py-1 text-xs font-medium text-yellow-700 dark:bg-yellow-900/20 dark:text-yellow-400">
-                        <svg className="h-3 w-3" fill="currentColor" viewBox="0 0 8 8">
-                          <circle cx="4" cy="4" r="3" />
-                        </svg>
-                        Draft
-                      </span>
-                    )}
-                  </TableCell>
-
-                  <TableCell>
-                    <div className="flex items-center gap-1.5 text-gray-600 dark:text-gray-400">
-                      <svg
-                        className="h-4 w-4"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                      >
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
-                        />
-                        <path
-                          strokeLinecap="round"
-                          strokeLinejoin="round"
-                          strokeWidth={2}
-                          d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
-                        />
-                      </svg>
-                      <span className="font-medium">{(blog.readCount ?? 0).toLocaleString()}</span>
-                    </div>
-                  </TableCell>
-
-                  <TableCell className="text-gray-600 dark:text-gray-400">
-                    {formatDate(blog.createdAt)}
-                  </TableCell>
-
-                  <TableCell className="pr-5 sm:pr-6 xl:pr-7.5">
-                    <div className="flex items-center justify-end gap-x-2">
-                      <Link href={`/blog/edit/${blog._id}`}>
-                        <button
-                          className="rounded-lg p-2 text-gray-600 hover:bg-gray-100 hover:text-primary dark:text-gray-400 dark:hover:bg-gray-700"
-                          title="Edit article"
-                        >
-                          <PreviewIcon />
-                        </button>
-                      </Link>
-
-                      <button
-                        onClick={() => handleDeleteClick(blog)}
-                        className="rounded-lg p-2 text-gray-600 hover:bg-red-50 hover:text-red-600 dark:text-gray-400 dark:hover:bg-red-900/20"
-                        title="Delete article"
-                      >
-                        <TrashIcon />
-                      </button>
-                    </div>
-                  </TableCell>
-                </TableRow>
-              ))
-            )}
-          </TableBody>
-        </Table>
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                  />
+                </svg>
+                <div>
+                  <p className="font-medium text-gray-600 dark:text-gray-400">
+                    {searchTerm || filterStatus !== "all"
+                      ? "No articles match your filters"
+                      : "No articles found"}
+                  </p>
+                  {(searchTerm || filterStatus !== "all") && (
+                    <button
+                      onClick={() => {
+                        setSearchTerm("");
+                        setFilterStatus("all");
+                      }}
+                      className="mt-2 text-sm text-primary hover:underline"
+                    >
+                      Clear filters
+                    </button>
+                  )}
+                </div>
+              </div>
+            ),
+          }}
+        />
       </div>
 
       <ConfirmationDialog
